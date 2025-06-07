@@ -38,7 +38,13 @@ In the analysis that follows, I will extract the key data from the original data
 
 ## Cleaning and EDA
 
-<iframe src="assets/10-80-enrollment.html" width=800 height=600 frameBorder=0></iframe>
+Before jumping into modeling, we carried out a systematic cleanup and initial exploration of the outage dataset. Below is a concise summary of each step, written in the same style as our project template:
+
+1. **Filter out incomplete timing records**  
+   We loaded the raw CSV into pandas and dropped any rows missing **month** or **time** information—since the precise timing of an outage is essential, records without these fields were removed.
+
+2. **Combine date and time into timestamps**  
+   We merged the separate start-date/start-time and restoration-date/restoration-time columns into two unified datetime fields, `OUTAGE.START` and `OUTAGE.RESTORE`, then dropped the original split-out columns.
 
 ---
 
