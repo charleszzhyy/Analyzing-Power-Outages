@@ -1,4 +1,4 @@
-# My Project Title
+# Analyzing Power Outages
 
 by Charles Zhang
 
