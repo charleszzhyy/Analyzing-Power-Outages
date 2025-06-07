@@ -2,13 +2,14 @@
 
 by Charles Zhang
 
-***Note***: If you choose a repo name and title as uninspired as the ones here, I will be quite sad.
-
 ---
 
 ## Introduction
 
-In this project, we studied the effectiveness of spice challenges in building team morale.
+In this project, I leveraged the Data on Major Power Outage Events in the Continental U.S. dataset—which evaluates risk predictors associated with sustained outages across the continental United States—to both analyze and forecast significant blackout incidents. This dataset was obtained from Purdue University’s Laboratory for Advancing Sustainable Critical Infrastructure at
+https://engineering.purdue.edu/LASCI/research-data/outages.
+
+For my analysis, I began by performing thorough data cleaning and exploratory data analysis, including an examination of the dataset’s missing-value mechanisms. I then concentrated on building a model to predict whether a given outage would qualify as a major event—one that disrupts service for a large number of customers—in order to help utilities proactively allocate repair and restoration resources.
 
 ---
 
