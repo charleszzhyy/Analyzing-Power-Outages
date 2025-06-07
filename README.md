@@ -46,6 +46,13 @@ Before jumping into modeling, we carried out a systematic cleanup and initial ex
 2. **Combine date and time into timestamps**  
    We merged the separate start-date/start-time and restoration-date/restoration-time columns into two unified datetime fields, `OUTAGE.START` and `OUTAGE.RESTORE`, then dropped the original split-out columns.
 
+<iframe
+  src="assets/monthly_outages.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
 ---
 
 ## Assessment of Missingness
