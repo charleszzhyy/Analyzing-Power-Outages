@@ -36,7 +36,9 @@ In the analysis that follows, I will extract the key data from the original data
 
 ---
 
-## Cleaning and EDA
+# Data Cleaning and Exploratory Data Analysis
+
+## Data Cleaning
 
 Before jumping into modeling, I carried out a systematic cleanup and initial exploration of the outage dataset. Below is a concise summary of each step, written in the same style as our project template:
 
@@ -68,6 +70,7 @@ First, I wanted to see how the number of outages has changed over time.
   frameborder="0">  
 </iframe>  
 
+
 I also wanted to see the distribution of major causes of power outages.  
 <iframe  
   src="assets/Distribution%20of%20CAUSE.CATEGORY.html"  
@@ -78,7 +81,7 @@ I also wanted to see the distribution of major causes of power outages.
 
 Then, I wanted to see the distribution of the number of outages by each U.S. state.  
 <iframe  
-  src="assets/map1.html"  
+  src="assets/Histogram_of_Outage_Duration.html"  
   width="800"  
   height="600"  
   frameborder="0">  
@@ -89,7 +92,7 @@ I conducted several bivariate analyses; the most significant results are shown b
 
 I examined the relationship between Outage Duration and Customers Affected—two metrics of outage severity.  
 <iframe  
-  src="assets/duration_cust.html"  
+  src="assets/Demand_Loss_vs_Customers_Affected.html"  
   width="800"  
   height="600"  
   frameborder="0">  
@@ -97,7 +100,7 @@ I examined the relationship between Outage Duration and Customers Affected—two
 
 The plot below shows the relation between outage duration and cause category.  
 <iframe  
-  src="assets/duration_cause.html"  
+  src="assets/Outage_Duration_vs_Demand_Loss.html"  
   width="800"  
   height="600"  
   frameborder="0">  
