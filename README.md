@@ -1,6 +1,6 @@
 # Analyzing Power Outages
-
-by Charles Zhang
+Project for Dsc 80 at UCSD
+By Charles Zhang
 
 ---
 
