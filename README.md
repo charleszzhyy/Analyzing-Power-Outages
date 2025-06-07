@@ -46,14 +46,77 @@ Before jumping into modeling, we carried out a systematic cleanup and initial ex
 2. **Combine date and time into timestamps**  
    We merged the separate start-date/start-time and restoration-date/restoration-time columns into two unified datetime fields, `OUTAGE.START` and `OUTAGE.RESTORE`, then dropped the original split-out columns.
 
-<iframe
-  src="assets/monthly_outages.html"
-  width="800"
-  height="600"
-  frameborder="0"
-></iframe>
 
 ---
+## Exploratory Data Analysis
+
+### Univariate Analysis
+In my exploratory data analysis, I first perform univariate analysis to examine the distribution of single variables.
+
+First, I wanted to see how the number of outages has changed over time.  
+<iframe  
+  src="assets/monthly_outages.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+
+I also wanted to see the distribution of major causes of power outages.  
+<iframe  
+  src="assets/Distribution%20of%20CAUSE.CATEGORY.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+
+Then, I wanted to see the distribution of the number of outages by each U.S. state.  
+<iframe  
+  src="assets/map1.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+
+### Bivariate Analysis
+I conducted several bivariate analyses; the most significant results are shown below.
+
+I examined the relationship between Outage Duration and Customers Affected—two metrics of outage severity.  
+<iframe  
+  src="assets/duration_cust.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+
+The plot below shows the relation between outage duration and cause category.  
+<iframe  
+  src="assets/duration_cause.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+
+### Grouping and Aggregates
+I grouped the data by NERC Region and calculated the mean of key severity metrics:
+
+| NERC.REGION | OUTAGE.DURATION | CUSTOMERS.AFFECTED | DEMAND.LOSS.MW |
+|-------------|----------------:|-------------------:|---------------:|
+| ASCC        |            nan  |               14273|              35|
+| ECAR        |        5603.31  |             256354|          1314.48|
+| FRCC        |        4271.12  |             375007|          1072.60|
+| FRCC, SERC  |           372   |                nan|             nan|
+| HECO        |        895.333  |             126729|           466.67|
+
+I also created a pivot table showing counts of outage causes by Climate Region:
+
+| CLIMATE.REGION     | equipment failure | fuel supply emergency | intentional attack | islanding | public appeal | severe weather | system operability disruption |
+|--------------------|------------------:|----------------------:|-------------------:|----------:|--------------:|---------------:|-------------------------------:|
+| Central            |                 7|                      4|                 38|          3|              2|             135|                              11|
+| East North Central |                 3|                      5|                 20|          1|              2|             104|                               3|
+| Northeast          |                 5|                     14|                135|          1|              4|             176|                              15|
+| Northwest          |                 2|                      1|                 89|          5|              2|              29|                               4|
+| South              |                10|                      7|                 28|          2|             42|             113|                              27|
+
 
 ## Assessment of Missingness
 
