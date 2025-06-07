@@ -38,7 +38,7 @@ In the analysis that follows, I will extract the key data from the original data
 
 ## Cleaning and EDA
 
-Before jumping into modeling, we carried out a systematic cleanup and initial exploration of the outage dataset. Below is a concise summary of each step, written in the same style as our project template:
+Before jumping into modeling, I carried out a systematic cleanup and initial exploration of the outage dataset. Below is a concise summary of each step, written in the same style as our project template:
 
 1. **Filter out incomplete timing records**  
    We loaded the raw CSV into pandas and dropped any rows missing **month** or **time** information—since the precise timing of an outage is essential, records without these fields were removed.
@@ -46,6 +46,13 @@ Before jumping into modeling, we carried out a systematic cleanup and initial ex
 2. **Combine date and time into timestamps**  
    We merged the separate start-date/start-time and restoration-date/restoration-time columns into two unified datetime fields, `OUTAGE.START` and `OUTAGE.RESTORE`, then dropped the original split-out columns.
 
+|   YEAR |   MONTH | U.S._STATE | NERC.REGION | CLIMATE.REGION       |   ANOMALY.LEVEL | CLIMATE.CATEGORY | OUTAGE.START        | OUTAGE.RESTORATION     | CAUSE.CATEGORY   | CAUSE.CATEGORY.DETAIL |   OUTAGE.DURATION |   DEMAND.LOSS.MW |
+|-------:|--------:|:-----------|:------------|:---------------------|----------------:|:-----------------|:---------------------|:----------------------|:-----------------|:----------------------|------------------:|-----------------:|
+|   2011 |       7 | Minnesota  | MRO         | East North Central   |            -0.3 | normal           | 2011-07-01 17:00:00 | 2011-07-03 20:00:00   | severe weather   | nan                  |              3060 |              nan |
+|   2014 |       5 | Minnesota  | MRO         | East North Central   |            -0.1 | normal           | 2014-05-11 18:38:00 | 2014-05-11 18:39:00   | intentional attack | vandalism            |                 1 |              nan |
+|   2010 |      10 | Minnesota  | MRO         | East North Central   |            -1.5 | cold             | 2010-10-26 20:00:00 | 2010-10-28 22:00:00   | severe weather   | heavy wind           |              3000 |              nan |
+|   2012 |       6 | Minnesota  | MRO         | East North Central   |            -0.1 | normal           | 2012-06-19 04:30:00 | 2012-06-20 23:00:00   | severe weather   | thunderstorm         |              2550 |              nan |
+|   2015 |       7 | Minnesota  | MRO         | East North Central   |             1.2 | warm             | 2015-07-18 02:00:00 | 2015-07-19 07:00:00   | severe weather   | nan                  |              1740 |              250 |
 
 ---
 ## Exploratory Data Analysis
