@@ -64,7 +64,7 @@ In my exploratory data analysis, I first perform univariate analysis to examine 
 
 First, I wanted to see how the number of outages has changed over time.  
 <iframe  
-  src="assets/monthly_outages.html"  
+  src="assets/Monthly_Outages.html"  
   width="800"  
   height="600"  
   frameborder="0">  
@@ -73,7 +73,7 @@ First, I wanted to see how the number of outages has changed over time.
 
 I also wanted to see the distribution of major causes of power outages.  
 <iframe  
-  src="assets/Distribution%20of%20CAUSE.CATEGORY.html"  
+  src="assets/Distribution_of_CAUSE.CATEGORY.html"  
   width="800"  
   height="600"  
   frameborder="0">  
@@ -101,6 +101,14 @@ I examined the relationship between Outage Duration and Customers Affected—two
 The plot below shows the relation between outage duration and cause category.  
 <iframe  
   src="assets/Outage_Duration_vs_Demand_Loss.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+
+
+<iframe  
+  src="assets/Outage_Frequency_and_Average_Duration_by_Climate_Region_&_Month.html"  
   width="800"  
   height="600"  
   frameborder="0">  
@@ -156,7 +164,7 @@ Because ANOMALY.LEVEL is a numeric variable, I used an ECDF to compare and show 
 </iframe>  
 The empirical distribution of K-S_Statistic from the permutation tests is shown below. Let’s set α = 0.01. We can see the observed KS p-value is 0.011, which is higher than α = 0.01. So, we don’t have enough evidence to reject the null hypothesis. It’s very likely that missing CAUSE.CATEGORY.DETAIL values are not related to the distribution of ANOMALY.LEVEL.
 <iframe  
-  src="assets/Empirical_Distribution_of_the_K-S_Statistic.html"  
+  src="assets/Permutation_Distribution_of_the_K–S_Statistic.html"  
   width="800"  
   height="600"  
   frameborder="0">  
