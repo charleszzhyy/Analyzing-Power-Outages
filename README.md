@@ -207,7 +207,6 @@ My baseline model is a binary classifier that predicts whether a power outage wi
 
 I split the data into 80 % training / 20 % testing sets, stratified by the target label.
 
---
 
 Features in my model
 - 4 nominal features (`NERC.REGION`, `CLIMATE.REGION`, `CAUSE.CATEGORY`, `ANOMALY.LEVEL`)  
@@ -218,7 +217,6 @@ I chose these because:
 - The numeric features (year/month) capture seasonality and trends.  
 - The log of total customers scales down large counts for stable learning.
 
----
 
 Performance on the test set
 
@@ -267,8 +265,6 @@ Model and hyperparameters
   - `n_estimators = 200`  
   - `max_depth = 10`  
   - `min_samples_leaf = 1`
-
----
 
 Performance comparison  
 
