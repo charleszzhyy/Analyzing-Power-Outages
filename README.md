@@ -5,36 +5,33 @@ By Charles Zhang
 ---
 
 ## Introduction
+I am using the Major Power Outage Events dataset from Purdue University’s LASCI Lab, which records every sustained blackout in the continental United States from 2000 through 2020. The dataset can be accessed through https://engineering.purdue.edu/LASCI/research-data/outages. In total there are 1,535 outage events and 57 different measurements for each event. My project centers on one question: when an outage first begins, can we tell whether it will turn into a severe incident that cuts power to ten thousand or more customers?
 
-In this project, I leveraged the Data on Major Power Outage Events in the Continental U.S. dataset—which evaluates risk predictors associated with sustained outages across the continental United States—to both analyze and forecast significant blackout incidents. This dataset was obtained from Purdue University’s Laboratory for Advancing Sustainable Critical Infrastructure at
-https://engineering.purdue.edu/LASCI/research-data/outages.
+Early prediction of large outages is important because utilities can send additional crews and resources to the hardest-hit areas, reducing downtime and economic loss. To build a model that does this, I will only use information that is known at the moment the outage starts—such as the date, the region affected, initial cause signals, and the size of the customer base.
 
-For my analysis, I began by performing thorough data cleaning and exploratory data analysis, including an examination of the dataset’s missing-value mechanisms. I then concentrated on building a model to predict whether a given outage would qualify as a major event—one that disrupts service for a large number of customers—in order to help utilities proactively allocate repair and restoration resources.
+Below is a summary of the most important columns for my prediction task:
 
-In the analysis that follows, I will extract the key data from the original dataset for analysis and model building.
+| Column                     | Description                                                                                  |
+|----------------------------|----------------------------------------------------------------------------------------------|
+| YEAR                       | The year in which the outage began                                                          |
+| MONTH                      | The month in which the outage began                                                         |
+| OUTAGE.START.DATE          | The calendar date when the outage event started                                             |
+| OUTAGE.START.TIME          | The time of day at which the outage began                                                   |
+| OUTAGE.RESTORATION.DATE    | The calendar date when power was fully restored                                             |
+| OUTAGE.RESTORATION.TIME    | The time of day at which service was restored                                               |
+| NERC.REGION                | The North American Electric Reliability Corporation region where the outage occurred         |
+| CLIMATE.REGION             | The U.S. climate zone (one of nine regions defined by NOAA)                                  |
+| ANOMALY.LEVEL              | The three-month Oceanic Niño Index value, indicating El Niño or La Niña conditions           |
+| CLIMATE.CATEGORY           | A label of “Cold,” “Normal,” or “Warm” based on the Niño index threshold                    |
+| CAUSE.CATEGORY             | A broad category of what caused the outage (for example, severe weather or equipment failure) |
+| OUTAGE.DURATION            | The total length of the outage in minutes                                                    |
+| DEMAND.LOSS.MW             | The maximum megawatts of demand that were lost during the outage                             |
+| CUSTOMERS.AFFECTED         | The number of customers who lost power                                                       |
+| TOTAL.CUSTOMERS            | The total number of customers served in the affected state                                   |
+| TOTAL.PRICE                | The average monthly electricity price in cents per kilowatt-hour                             |
 
-| Column                    | Description                                                                                       |
-|---------------------------|---------------------------------------------------------------------------------------------------|
-| `YEAR`                    | Year an outage event occurred                                                                      |
-| `MONTH`                   | Month an outage event occurred                                                                     |
-| `U.S._STATE`              | U.S. state where the outage occurred                                                               |
-| `NERC.REGION`             | North American Electric Reliability Corporation region involved in the outage                      |
-| `CLIMATE.REGION`          | U.S. Climate region as specified by National Centers for Environmental Information (9 regions)     |
-| `ANOMALY.LEVEL`           | Oceanic El Niño/La Niña (ONI) index (cold/warm episodes by season; 3-month running mean in Niño 3.4) |
-| `CLIMATE.CATEGORY`        | Climate episode category (“Warm”, “Cold” or “Normal”) based on ± 0.5 °C ONI threshold               |
-| `OUTAGE.START`            | Combined start date & time of the outage event (day of year + time of day)                         |
-| `OUTAGE.RESTORATION`      | Combined restoration date & time when power was fully restored (day of year + time of day)         |
-| `CAUSE.CATEGORY`          | High‐level category of the event causing the outage                                                |
-| `CAUSE.CATEGORY.DETAIL`   | Detailed description of the cause                                                                  |
-| `OUTAGE.DURATION`         | Duration of the outage event (in minutes)                                                          |
-| `DEMAND.LOSS.MW`          | Peak demand lost during the outage (in megawatts)                                                  |
-| `CUSTOMERS.AFFECTED`      | Number of customers affected by the outage                                                         |
-| `TOTAL.PRICE`             | Average monthly electricity price in the state (cents per kWh)                                     |
-| `TOTAL.SALES`             | Total monthly electricity consumption in the state (megawatt-hours)                                 |
-| `TOTAL.CUSTOMERS`         | Total annual number of customers served in the state                                               |
-| `POPDEN_URBAN`            | Urban population density (persons per square mile)                                                 |
+I will use these features to train a binary classifier that tells “severe” versus “non-severe” outages, and I will evaluate my model using the F1-score so that it balances the goals of catching serious events and avoiding unnecessary alarms.
 
----
 
 # Data Cleaning and Exploratory Data Analysis
 
@@ -48,19 +45,82 @@ Before jumping into modeling, I carried out a systematic cleanup and initial exp
 2. **Combine date and time into timestamps**  
    We merged the separate start-date/start-time and restoration-date/restoration-time columns into two unified datetime fields, `OUTAGE.START` and `OUTAGE.RESTORE`, then dropped the original split-out columns.
 
-|   YEAR |   MONTH | U.S._STATE | NERC.REGION | CLIMATE.REGION       |   ANOMALY.LEVEL | CLIMATE.CATEGORY | OUTAGE.START        | OUTAGE.RESTORATION     | CAUSE.CATEGORY   | CAUSE.CATEGORY.DETAIL |   OUTAGE.DURATION |   DEMAND.LOSS.MW |
-|-------:|--------:|:-----------|:------------|:---------------------|----------------:|:-----------------|:---------------------|:----------------------|:-----------------|:----------------------|------------------:|-----------------:|
-|   2011 |       7 | Minnesota  | MRO         | East North Central   |            -0.3 | normal           | 2011-07-01 17:00:00 | 2011-07-03 20:00:00   | severe weather   | nan                  |              3060 |              nan |
-|   2014 |       5 | Minnesota  | MRO         | East North Central   |            -0.1 | normal           | 2014-05-11 18:38:00 | 2014-05-11 18:39:00   | intentional attack | vandalism            |                 1 |              nan |
-|   2010 |      10 | Minnesota  | MRO         | East North Central   |            -1.5 | cold             | 2010-10-26 20:00:00 | 2010-10-28 22:00:00   | severe weather   | heavy wind           |              3000 |              nan |
-|   2012 |       6 | Minnesota  | MRO         | East North Central   |            -0.1 | normal           | 2012-06-19 04:30:00 | 2012-06-20 23:00:00   | severe weather   | thunderstorm         |              2550 |              nan |
-|   2015 |       7 | Minnesota  | MRO         | East North Central   |             1.2 | warm             | 2015-07-18 02:00:00 | 2015-07-19 07:00:00   | severe weather   | nan                  |              1740 |              250 |
+| YEAR | MONTH | U.S._STATE | NERC.REGION | CLIMATE.REGION     | ANOMALY.LEVEL | CLIMATE.CATEGORY | OUTAGE.START         | OUTAGE.RESTORATION      | CAUSE.CATEGORY     | CAUSE.CATEGORY.DETAIL | OUTAGE.DURATION | DEMAND.LOSS.MW | … |
+|-----:|------:|:-----------|:------------|:-------------------|--------------:|:-----------------|:---------------------|:-----------------------|:-------------------|:----------------------|----------------:|---------------:|---|
+| 2011 |     7 | Minnesota  | MRO         | East North Central |          -0.3 | normal           | 2011-07-01 17:00:00  | 2011-07-03 20:00:00    | severe weather     | nan                   |            3060 |            nan | … |
+| 2014 |     5 | Minnesota  | MRO         | East North Central |          -0.1 | normal           | 2014-05-11 18:38:00  | 2014-05-11 18:39:00    | intentional attack | vandalism             |               1 |            nan | … |
+| 2010 |    10 | Minnesota  | MRO         | East North Central |          -1.5 | cold             | 2010-10-26 20:00:00  | 2010-10-28 22:00:00    | severe weather     | heavy wind            |            3000 |            nan | … |
+| 2012 |     6 | Minnesota  | MRO         | East North Central |          -0.1 | normal           | 2012-06-19 04:30:00  | 2012-06-20 23:00:00    | severe weather     | thunderstorm          |            2550 |            nan | … |
+| 2015 |     7 | Minnesota  | MRO         | East North Central |           1.2 | warm             | 2015-07-18 02:00:00  | 2015-07-19 07:00:00    | severe weather     | nan                   |            1740 |            250 | … |
 
 ---
 ## Exploratory Data Analysis
 
 ### Univariate Analysis
+
 In my exploratory data analysis, I first perform univariate analysis to examine the distribution of single variables.
+
+To begin, I looked at how the total number of outages has trended over the years. This helps us see whether blackouts are becoming more or less frequent over time.  
+<iframe  
+  src="assets/Monthly_Outages.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+*The plot shows a general rise in outage counts from 2000 through 2011, followed by a gradual decline—suggesting increased grid resilience after 2011.*
+
+Next, I examined the breakdown of outage causes to understand which types of events occur most often.  
+<iframe  
+  src="assets/Distribution_of_CAUSE.CATEGORY.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+*Severe weather clearly dominates as the leading cause, while equipment failures and intentional attacks appear much less frequently.*
+
+Finally, I checked how outage durations are distributed across states to identify any regional hotspots of long outages.  
+<iframe  
+  src="assets/Histogram_of_Outage_Duration.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+*Most outages last under 1,000 minutes, but there is a long tail of rare events that exceed 5,000 minutes—highlighting the importance of modeling extreme durations separately.*
+
+---
+
+### Bivariate Analysis
+
+To see how two severity metrics relate, I plotted outage duration against the number of customers affected.  
+<iframe  
+  src="assets/Demand_Loss_vs_Customers_Affected.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+*There is a loose positive trend: longer outages often impact more customers, but some high-impact events end quickly, indicating other factors at play.*
+
+I then explored how outage duration varies by cause category to see which causes tend to produce the longest disruptions.  
+<iframe  
+  src="assets/Outage_Duration_vs_Demand_Loss.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+*Fuel supply emergencies and severe weather produce the longest outages on average, while intentional attacks and minor equipment failures tend to resolve more quickly.*
+
+Finally, I grouped outages by climate region and month to uncover seasonal and geographic patterns.  
+<iframe  
+  src="assets/Outage_Frequency_and_Average_Duration_by_Climate_Region_&_Month.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+*This heatmap reveals that the South experiences more frequent outages in hurricane season (August–October), whereas the Northwest sees its peak in winter months due to storms.*
+
+
+
+
 
 First, I wanted to see how the number of outages has changed over time.  
 <iframe  
