@@ -281,3 +281,38 @@ Performance comparison
 
 - The final model increased F1 by about 0.024 over the baseline.  
 - Precision for “Severe” rose (fewer false alarms) while recall stayed above 95% (still catches almost all true severe outages).
+
+## Fairness Analysis
+
+For the fairness analysis, I compared model performance on two groups defined by CLIMATE.REGION:
+
+- Group X: Northwest  
+- Group Y: South  
+
+Evaluation metric: F1-score on the same 20% hold-out test set.
+
+Null Hypothesis (H₀):  
+The model’s F1-score for Northwest outages equals its F1-score for South outages; any difference is due to random chance.
+
+Alternative Hypothesis (H₁):  
+The model’s F1-score for Northwest outages differs from its F1-score for South outages.
+
+Test statistic:  
+Δ = F1(Northwest) − F1(South)
+
+- Observed F1(Northwest) = 0.889  
+- Observed F1(South)     = 0.923  
+- Observed Δ             = –0.034
+
+<iframe  
+  src="assets/Permutation_Distribution_of_F1_Difference.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe> 
+
+I performed a permutation test with 1 000 shuffles of the group labels to build a null distribution of Δ.  
+p-value = 0.59 (two-sided)
+
+Because p = 0.59 > 0.05, we fail to reject H₀. There is no significant evidence of performance disparity; the model appears fair across these two climate regions.
+
