@@ -220,7 +220,8 @@ I chose these because:
 
 ---
 
-**Performance on the test set**  
+**Performance on the test set**
+
 | Metric    | Value  |
 |-----------|--------|
 | Accuracy  | 0.885  |
