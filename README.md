@@ -107,7 +107,7 @@ I then explored how outage duration varies by cause category to see which causes
   height="600"  
   frameborder="0">  
 </iframe>  
-*Fuel supply emergencies and severe weather produce the longest outages on average, while intentional attacks and minor equipment failures tend to resolve more quickly.*
+*The scatter shows only a weak upward trend—longer outages often mean more demand loss, but the points are widely scattered. This dispersion suggests that factors like cause category or customer density also play a big role in how much power is lost.*  
 
 Finally, I grouped outages by climate region and month to uncover seasonal and geographic patterns.  
 <iframe  
@@ -118,61 +118,6 @@ Finally, I grouped outages by climate region and month to uncover seasonal and g
 </iframe>  
 *This heatmap reveals that the South experiences more frequent outages in hurricane season (August–October), whereas the Northwest sees its peak in winter months due to storms.*
 
-
-
-
-
-First, I wanted to see how the number of outages has changed over time.  
-<iframe  
-  src="assets/Monthly_Outages.html"  
-  width="800"  
-  height="600"  
-  frameborder="0">  
-</iframe>  
-
-
-I also wanted to see the distribution of major causes of power outages.  
-<iframe  
-  src="assets/Distribution_of_CAUSE.CATEGORY.html"  
-  width="800"  
-  height="600"  
-  frameborder="0">  
-</iframe>  
-
-Then, I wanted to see the distribution of the number of outages by each U.S. state.  
-<iframe  
-  src="assets/Histogram_of_Outage_Duration.html"  
-  width="800"  
-  height="600"  
-  frameborder="0">  
-</iframe>  
-
-### Bivariate Analysis
-I conducted several bivariate analyses; the most significant results are shown below.
-
-I examined the relationship between Outage Duration and Customers Affected—two metrics of outage severity.  
-<iframe  
-  src="assets/Demand_Loss_vs_Customers_Affected.html"  
-  width="800"  
-  height="600"  
-  frameborder="0">  
-</iframe>  
-
-The plot below shows the relation between outage duration and cause category.  
-<iframe  
-  src="assets/Outage_Duration_vs_Demand_Loss.html"  
-  width="800"  
-  height="600"  
-  frameborder="0">  
-</iframe>  
-
-
-<iframe  
-  src="assets/Outage_Frequency_and_Average_Duration_by_Climate_Region_&_Month.html"  
-  width="800"  
-  height="600"  
-  frameborder="0">  
-</iframe>  
 
 ### Grouping and Aggregates
 
