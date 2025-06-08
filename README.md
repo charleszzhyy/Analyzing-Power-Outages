@@ -146,7 +146,7 @@ Alternate hypothesis: The distribution of CAUSE.CATEGORY is different when CAUSE
 </iframe>  
 The empirical distribution from the permutation tests is shown below. Let's use α = 0.01 here. The p-value for the observed TVD is 0.001, which is much smaller than α = 0.01, so we reject the null hypothesis. This means the missingness of CAUSE.CATEGORY.DETAIL is related to the distribution of CAUSE.CATEGORY.
 <iframe  
-  src="assets/Permutation Test.html"  
+  src="assets/Permutation_Test.html"  
   width="800"  
   height="600"  
   frameborder="0">  
