@@ -125,11 +125,13 @@ I created a pivot table showing counts of outage causes by Climate Region:
 
 | CLIMATE.REGION     | equipment failure | fuel supply emergency | intentional attack | islanding | public appeal | severe weather | system operability disruption |
 |--------------------|------------------:|----------------------:|-------------------:|----------:|--------------:|---------------:|-------------------------------:|
-| Central            |                 7|                      4|                 38|          3|              2|             135|                              11|
-| East North Central |                 3|                      5|                 20|          1|              2|             104|                               3|
-| Northeast          |                 5|                     14|                135|          1|              4|             176|                              15|
-| Northwest          |                 2|                      1|                 89|          5|              2|              29|                               4|
-| South              |                10|                      7|                 28|          2|             42|             113|                              27|
+| Central            |                 7 |                     4 |                38 |         3 |             2 |            135 |                             11 |
+| East North Central |                 3 |                     5 |                20 |         1 |             2 |            104 |                              3 |
+| Northeast          |                 5 |                    14 |               135 |         1 |             4 |            176 |                             15 |
+| Northwest          |                 2 |                     1 |                89 |         5 |             2 |             29 |                              4 |
+| South              |                10 |                     7 |                28 |         2 |            42 |            113 |                             27 |
+
+*The table shows that severe weather is the leading cause in every region, while intentional attacks are especially frequent in the Northeast and public appeals spike in the South.*
 
 
 ## Assessment of Missingness
