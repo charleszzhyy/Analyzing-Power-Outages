@@ -177,4 +177,61 @@ Alternative hypothesis: The average number of blackouts per year in the Northeas
 </iframe>  
 
 
----
+## Framing a Prediction Problem
+
+For this background, I want to predict when a power outage begins, whether it will be severe (impacting 10 000 or more customers) or non-severe (fewer than 10 000) power outage. To solve this, we frame the task as a binary classification problem and train a model that sees only the information available at outage start.
+
+Features available at prediction time:
+
+Calendar data: YEAR, MONTH
+
+Grid location: NERC.REGION, CLIMATE.REGION
+
+Initial cause tags: CAUSE.CATEGORY, ANOMALY.LEVEL
+
+System scale: TOTAL.CUSTOMERS (logged to log_TOTAL_CUSTOMERS)
+
+Evaluation metric: We use the F1-score, which balances precision (avoiding false alarms) and recall (catching true severe outages). This is critical because our classes are slightly imbalanced (≈ 53 % severe, 47 % non-severe). By relying solely on these instantaneously known features and optimizing F1, the model can provide timely guidance on resource deployment when an outage first occurs.
+
+
+## Baseline Model
+
+My baseline model is a binary classifier that predicts whether a power outage will be severe (≥ 10 000 customers affected) or non-severe. I built it using an sklearn Pipeline with two main steps:
+Feature encoding
+Nominal (categorical): NERC.REGION, CLIMATE.REGION, CAUSE.CATEGORY, ANOMALY.LEVEL → One-Hot Encoding
+Quantitative (numeric):YEAR, MONTH, log_TOTAL_CUSTOMERS (the log of TOTAL.CUSTOMERS) → StandardScaler
+
+Model
+
+LogisticRegression with max_iter=5000
+
+I split the data into 80 % training / 20 % testing sets, stratified by the target label.
+
+Features in my model
+
+4 nominal features (NERC.REGION, CLIMATE.REGION, CAUSE.CATEGORY, ANOMALY.LEVEL)
+
+3 quantitative features (YEAR, MONTH, log_TOTAL_CUSTOMERS)
+
+I chose these because:
+
+The categorical features describe the grid area and climate context, which affect outage patterns.
+
+The numeric features (year/month) capture seasonality and trends.
+
+The log of total customers scales down large counts for stable learning.
+
+Performance on the test set
+
+Metric	Value
+Accuracy	0.885
+Precision	0.852
+Recall	0.949
+F1	0.898
+
+H means the model catches almost all truly severe outages.
+
+Precision (≈ 85 %) shows there are some false alarms, but overall balance is good.
+
+I believe this baseline model is good enough to provide early warnings, but there is room to reduce false alarms. In the next step, I will engineer additional features and try a more powerful model to improve precision while keeping recall high.
+
