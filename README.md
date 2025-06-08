@@ -337,3 +337,95 @@ p-value = 0.59 (two-sided)
 
 Because p = 0.59 > 0.05, we fail to reject H₀. There is no significant evidence of performance disparity; the model appears fair across these two climate regions.
 
+
+
+
+## Baseline Model
+
+I trained a simple logistic regression pipeline to establish a starting point. First, I read in the outage data and then:
+
+1. Cleaned inputs: Dropped any rows missing key features (`NERC.REGION`, `CLIMATE.REGION`, `CAUSE.CATEGORY`, `ANOMALY.LEVEL`, `YEAR`, `MONTH`, `TOTAL.CUSTOMERS`, `TOTAL.PRICE`), and then removed all records without a known `CUSTOMERS.AFFECTED` value.  
+2. Created the label SEVERE (1 if ≥10 000 customers affected; 0 otherwise) and took the logarithm of `TOTAL.CUSTOMERS` to form `log_TOTAL_CUSTOMERS`.  
+3. Encoded features: One-hot for the four categorical columns, standard scaling for `YEAR`, `MONTH`, and `log_TOTAL_CUSTOMERS`.  
+4. Split the cleaned data 80/20 with stratification on SEVERE.  
+5. Fitted `LogisticRegression(max_iter=5000)` on the training set.  
+
+### Features
+
+- Categorical: `NERC.REGION`, `CLIMATE.REGION`, `CAUSE.CATEGORY`, `ANOMALY.LEVEL`  
+- Numeric: `YEAR`, `MONTH`, `log_TOTAL_CUSTOMERS`  
+
+### Test-set performance
+
+| Metric    | Value  |
+|-----------|--------|
+| Accuracy  | 0.885  |
+| Precision | 0.852  |
+| Recall    | 0.949  |
+| F1-score  | 0.898  |
+
+<iframe  
+  src="assets/Baseline_Confusion_Matrix.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+
+On the test set, the model catches about 95% of true severe outages (high recall) but issues some false alarms (about 85% precision). This baseline gives us a reference for improvement.
+
+---
+
+## Final Model
+
+Building on the baseline, I added two new features and switched to a random forest:
+
+1. New features  
+   - Seasonality: `MONTH_sin` and `MONTH_cos` encode cyclic month effects.  
+   - Price signal: Log-transform of the average state electricity price (`log_TOTAL.PRICE`).  
+2. Pipeline: One-hot plus standard scaling, then `RandomForestClassifier`.  
+3. Hyperparameter tuning via `GridSearchCV` (3-fold, F1 scoring) over  
+   `n_estimators` in {200, 400}, `max_depth` in {None, 10, 20}, `min_samples_leaf` in {1, 3}.  
+
+The best parameters were:  
+- n_estimators = 200  
+- max_depth = 10  
+- min_samples_leaf = 1  
+
+| Metric | Baseline | Final  | Change |
+|--------|----------|--------|--------|
+| F1     | 0.898    | 0.922  | +0.024 |
+
+<iframe  
+  src="assets/Final_Confusion_Matrix.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+
+The random forest lifted F1 by about 0.024. It reduced false alarms while keeping recall above 95%.
+
+---
+
+## Fairness Analysis
+
+Finally, I tested whether the model’s F1-score differs between the Northwest and South climate regions:
+
+- Groups:  
+  - X = outages in Northwest  
+  - Y = outages in South  
+- Metric: test-set F1-score  
+- Test statistic: Δ = F1(X) − F1(Y)  
+
+After splitting and training on the same cleaned data, I observed:  
+- F1(Northwest) = 0.889  
+- F1(South)     = 0.923  
+- Δ = −0.034  
+
+I ran a two-sided permutation test with 1 000 label shuffles, yielding p = 0.59. Since p > 0.05, there is no significant difference, and the model appears fair across these two regions.
+
+<iframe  
+  src="assets/Permutation_Distribution_of_F1_Difference.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
