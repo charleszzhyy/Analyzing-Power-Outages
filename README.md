@@ -207,7 +207,7 @@ My baseline model is a binary classifier that predicts whether a power outage wi
 
 I split the data into 80 % training / 20 % testing sets, stratified by the target label.
 
----
+--
 
 Features in my model
 - 4 nominal features (`NERC.REGION`, `CLIMATE.REGION`, `CAUSE.CATEGORY`, `ANOMALY.LEVEL`)  
