@@ -229,9 +229,59 @@ Performance on the test set
 | Recall    | 0.949  |
 | F1    | 0.898 |
 
+<iframe  
+  src="assets/Baseline_Confusion_Matrix.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
 
 
 - High recall (≈ 95 %) means the model catches almost all truly severe outages.  
-- Precision (≈ 85 %) shows there are some false alarms, but overall balance is good.  
+- Precision (≈ 85 %) shows there are some false alarms, but overall balance is good.
+
+- 
 
 I believe this baseline model is good enough to provide early warnings, but there is room to reduce false alarms. In the next step, I will engineer additional features and try a more powerful model to improve precision while keeping recall high.
+
+## Final Model
+
+For the final model, I improved upon the baseline by engineering two new features and using a more powerful algorithm.
+
+New features added  
+1. Seasonality:  
+   - `MONTH_sin = sin(2π · MONTH / 12)`  
+   - `MONTH_cos = cos(2π · MONTH / 12)`  
+   These capture cyclic weather patterns (e.g. winter storms vs. summer heat) without a break between December and January.  
+2. Price signal:  
+   - `log_TOTAL.PRICE` (the log of `TOTAL.PRICE`)  
+   Electricity price often correlates with grid size and demand stress, so taking its log stabilises extreme values and reveals economic pressure on the network.
+
+Model and hyperparameters  
+- Algorithm: `RandomForestClassifier` inside a single `sklearn` Pipeline (One-Hot for categorical, StandardScaler for numeric).  
+- Hyperparameter search: Used `GridSearchCV` with 3-fold cross-validation, optimizing F1-score.  
+  - `n_estimators`: [200, 400]  
+  - `max_depth`: [None, 10, 20]  
+  - `min_samples_leaf`: [1, 3]  
+- Best parameters found:  
+  - `n_estimators = 200`  
+  - `max_depth = 10`  
+  - `min_samples_leaf = 1`
+
+---
+
+Performance comparison  
+
+| Metric | Baseline | Final  | Change |
+|--------|----------|--------|--------|
+| F1     | 0.898    | 0.922  | +0.024 |
+
+<iframe  
+  src="assets/Confusion_Matrix.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+
+- The final model increased F1 by about 0.024 over the baseline.  
+- Precision for “Severe” rose (fewer false alarms) while recall stayed above 95% (still catches almost all true severe outages).
