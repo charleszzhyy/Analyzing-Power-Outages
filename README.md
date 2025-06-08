@@ -196,42 +196,39 @@ Evaluation metric: We use the F1-score, which balances precision (avoiding false
 
 ## Baseline Model
 
-My baseline model is a binary classifier that predicts whether a power outage will be severe (≥ 10 000 customers affected) or non-severe. I built it using an sklearn Pipeline with two main steps:
-Feature encoding
-Nominal (categorical): NERC.REGION, CLIMATE.REGION, CAUSE.CATEGORY, ANOMALY.LEVEL → One-Hot Encoding
-Quantitative (numeric):YEAR, MONTH, log_TOTAL_CUSTOMERS (the log of TOTAL.CUSTOMERS) → StandardScaler
+My baseline model is a **binary classifier** that predicts whether a power outage will be **severe** (≥ 10 000 customers affected) or **non-severe**. I built it using an `sklearn` **Pipeline** with two main steps:
 
-Model
+1. **Feature encoding**  
+   - **Nominal (categorical)**: `NERC.REGION`, `CLIMATE.REGION`, `CAUSE.CATEGORY`, `ANOMALY.LEVEL` → One-Hot Encoding  
+   - **Quantitative (numeric)**: `YEAR`, `MONTH`, `log_TOTAL_CUSTOMERS` (the log of `TOTAL.CUSTOMERS`) → StandardScaler  
 
-LogisticRegression with max_iter=5000
+2. **Model**  
+   - **LogisticRegression** with `max_iter=5000`  
 
-I split the data into 80 % training / 20 % testing sets, stratified by the target label.
+I split the data into **80 % training / 20 % testing** sets, stratified by the target label.
 
-Features in my model
+---
 
-4 nominal features (NERC.REGION, CLIMATE.REGION, CAUSE.CATEGORY, ANOMALY.LEVEL)
+**Features in my model**  
+- **4 nominal** features (`NERC.REGION`, `CLIMATE.REGION`, `CAUSE.CATEGORY`, `ANOMALY.LEVEL`)  
+- **3 quantitative** features (`YEAR`, `MONTH`, `log_TOTAL_CUSTOMERS`)  
 
-3 quantitative features (YEAR, MONTH, log_TOTAL_CUSTOMERS)
+I chose these because:  
+- The categorical features describe the grid area and climate context, which affect outage patterns.  
+- The numeric features (year/month) capture seasonality and trends.  
+- The log of total customers scales down large counts for stable learning.
 
-I chose these because:
+---
 
-The categorical features describe the grid area and climate context, which affect outage patterns.
+**Performance on the test set**  
+| Metric    | Value  |
+|-----------|--------|
+| Accuracy  | 0.885  |
+| Precision | 0.852  |
+| Recall    | 0.949  |
+| **F1**    | **0.898** |
 
-The numeric features (year/month) capture seasonality and trends.
+- **High recall (≈ 95 %)** means the model catches almost all truly severe outages.  
+- **Precision (≈ 85 %)** shows there are some false alarms, but overall balance is good.  
 
-The log of total customers scales down large counts for stable learning.
-
-Performance on the test set
-
-Metric	Value
-Accuracy	0.885
-Precision	0.852
-Recall	0.949
-F1	0.898
-
-H means the model catches almost all truly severe outages.
-
-Precision (≈ 85 %) shows there are some false alarms, but overall balance is good.
-
-I believe this baseline model is good enough to provide early warnings, but there is room to reduce false alarms. In the next step, I will engineer additional features and try a more powerful model to improve precision while keeping recall high.
-
+I believe this baseline model is **good enough** to provide early warnings, but there is room to **reduce false alarms**. In the next step, I will engineer additional features and try a more powerful model to improve precision while keeping recall high.
