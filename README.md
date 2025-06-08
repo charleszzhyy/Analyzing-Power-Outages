@@ -107,17 +107,8 @@ The plot below shows the relation between outage duration and cause category.
 </iframe>  
 
 ### Grouping and Aggregates
-I grouped the data by NERC Region and calculated the mean of key severity metrics:
 
-| NERC.REGION | OUTAGE.DURATION | CUSTOMERS.AFFECTED | DEMAND.LOSS.MW |
-|-------------|----------------:|-------------------:|---------------:|
-| ASCC        |            nan  |               14273|              35|
-| ECAR        |        5603.31  |             256354|          1314.48|
-| FRCC        |        4271.12  |             375007|          1072.60|
-| FRCC, SERC  |           372   |                nan|             nan|
-| HECO        |        895.333  |             126729|           466.67|
-
-I also created a pivot table showing counts of outage causes by Climate Region:
+I created a pivot table showing counts of outage causes by Climate Region:
 
 | CLIMATE.REGION     | equipment failure | fuel supply emergency | intentional attack | islanding | public appeal | severe weather | system operability disruption |
 |--------------------|------------------:|----------------------:|-------------------:|----------:|--------------:|---------------:|-------------------------------:|
@@ -129,24 +120,61 @@ I also created a pivot table showing counts of outage causes by Climate Region:
 
 
 ## Assessment of Missingness
+### NMAR Analysis
+I think the missing values in DEMAND.LOSS.MW might be NMAR. Calculating how much electricity demand is lost is complicated, and the bigger a blackout is, the harder it is to fully count the lost power. So, more severe blackouts are more likely to have no DEMAND.LOSS.MW data. 
+If we could also get information on the economic losses caused by each blackout, it might explain why DEMAND.LOSS.MW is missing and let us treat it as MAR.
 
-Here's what a Markdown table looks like. Note that the code for this table was generated _automatically_ from a DataFrame, using
+### Missingness Dependency
+I focused on whether the missing values in CAUSE.CATEGORY.DETAIL depend on other factors. I ran permutation tests separately to check its relationship with CAUSE.CATEGORY and with ANOMALY.LEVEL.
 
-```py
-print(counts[['Quarter', 'Count']].head().to_markdown(index=False))
-```
+#### CAUSE.CATEGORY
+Null hypothesis: The distribution of CAUSE.CATEGORY is the same whether CAUSE.CATEGORY.DETAIL is missing or not.
+Alternate hypothesis: The distribution of CAUSE.CATEGORY is different when CAUSE.CATEGORY.DETAIL is missing compared to when it’s not missing.
+<iframe  
+  src="assets/Distribution_of_Cause_Category_by_Detail_Missingness.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+The empirical distribution from the permutation tests is shown below. Let's use α = 0.01 here. The p-value for the observed TVD is 0.001, which is much smaller than α = 0.01, so we reject the null hypothesis. This means the missingness of CAUSE.CATEGORY.DETAIL is related to the distribution of CAUSE.CATEGORY.
+<iframe  
+  src="assets/Permutation Test.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
 
-| Quarter     |   Count |
-|:------------|--------:|
-| Fall 2020   |       3 |
-| Winter 2021 |       2 |
-| Spring 2021 |       6 |
-| Summer 2021 |       4 |
-| Fall 2021   |      55 |
+#### ANOMALY.LEVEL
+Null hypothesis: When CAUSE.CATEGORY.DETAIL is missing, the distribution of ANOMALY.LEVEL is the same as when CAUSE.CATEGORY.DETAIL is not missing.
+Alternative hypothesis: When CAUSE.CATEGORY.DETAIL is missing, the distribution of ANOMALY.LEVEL is different from when CAUSE.CATEGORY.DETAIL is not missing.
+Because ANOMALY.LEVEL is a numeric variable, I used an ECDF to compare and show the data distributions.
+<iframe  
+  src="assets/ECDF_of_ANOMALY.LEVEL_by_Detail_Missingness.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+The empirical distribution of K-S_Statistic from the permutation tests is shown below. Let’s set α = 0.01. We can see the observed KS p-value is 0.011, which is higher than α = 0.01. So, we don’t have enough evidence to reject the null hypothesis. It’s very likely that missing CAUSE.CATEGORY.DETAIL values are not related to the distribution of ANOMALY.LEVEL.
+<iframe  
+  src="assets/Empirical_Distribution_of_the_K-S_Statistic.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
 
----
+
 
 ## Hypothesis Testing
+I will use a permutation version of the paired t-test to check if the average yearly number of blackouts in the Northeast and Northwest regions is significantly different.
+Null hypothesis: The average number of blackouts per year is the same in the Northeast and the Northwest.
+Alternative hypothesis: The average number of blackouts per year in the Northeast is greater than in the Northwest.
+
+<iframe  
+  src="assets/Paired_t_Permutation.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
 
 
 ---
