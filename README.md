@@ -295,7 +295,9 @@ Performance comparison
 For the fairness analysis, I compared model performance on two groups defined by CLIMATE.REGION:
 
 - Group X: Northwest  
-- Group Y: South  
+- Group Y: South
+
+We chose to compare the Northwest and South regions because they experience very different weather drivers (e.g. winter storms vs. hurricanes). Our goal was to check whether the model’s F1-score stays consistent across these two climates. 
 
 Evaluation metric: F1-score on the same 20% hold-out test set.
 
