@@ -330,5 +330,4 @@ Test statistic:
   height="600"  
   frameborder="0">  
 </iframe>  
-
 I ran a two-sided permutation test with 1 000 shuffles of the region labels. The resulting p-value is 0.095, which is greater than α = 0.05. We therefore fail to reject H₀ and conclude there is no strong evidence of unfair performance between the Northwest and South regions.
