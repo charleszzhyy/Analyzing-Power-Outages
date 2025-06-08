@@ -230,6 +230,7 @@ Performance on the test set
 | F1    | 0.898 |
 
 
+
 - High recall (≈ 95 %) means the model catches almost all truly severe outages.  
 - Precision (≈ 85 %) shows there are some false alarms, but overall balance is good.  
 
