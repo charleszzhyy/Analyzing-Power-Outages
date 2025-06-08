@@ -123,15 +123,19 @@ Finally, I grouped outages by climate region and month to uncover seasonal and g
 
 I created a pivot table showing counts of outage causes by Climate Region:
 
-| CLIMATE.REGION     | equipment failure | fuel supply emergency | intentional attack | islanding | public appeal | severe weather | system operability disruption |
-|--------------------|------------------:|----------------------:|-------------------:|----------:|--------------:|---------------:|-------------------------------:|
-| Central            |                 7 |                     4 |                38 |         3 |             2 |            135 |                             11 |
-| East North Central |                 3 |                     5 |                20 |         1 |             2 |            104 |                              3 |
-| Northeast          |                 5 |                    14 |               135 |         1 |             4 |            176 |                             15 |
-| Northwest          |                 2 |                     1 |                89 |         5 |             2 |             29 |                              4 |
-| South              |                10 |                     7 |                28 |         2 |            42 |            113 |                             27 |
+| CLIMATE.REGION        | equipment failure | fuel supply emergency | intentional attack | islanding | public appeal | severe weather | system operability disruption |
+|-----------------------|------------------:|----------------------:|-------------------:|----------:|--------------:|---------------:|-------------------------------:|
+| Central               |                 5 |                     4 |                34 |         3 |             2 |            133 |                             10 |
+| East North Central    |                 3 |                     4 |                20 |         1 |             2 |            104 |                              3 |
+| Northeast             |                 5 |                    14 |               131 |         1 |             4 |            175 |                             14 |
+| Northwest             |                 2 |                     1 |                85 |         3 |             2 |             25 |                              4 |
+| South                 |                 9 |                     4 |                28 |         2 |            42 |            106 |                             27 |
+| Southeast             |                 4 |                     0 |                 9 |         0 |             5 |            116 |                             16 |
+| Southwest             |                 5 |                     1 |                61 |         1 |             1 |             10 |                              9 |
+| West                  |                21 |                    10 |                31 |        28 |             9 |             67 |                             39 |
+| West North Central    |                 1 |                     0 |                 4 |         5 |             2 |              4 |                              0 |
 
-*The table shows that severe weather is the leading cause in every region, while intentional attacks are especially frequent in the Northeast and public appeals spike in the South.*
+*Severe weather remains the most common cause everywhere. The West reports the highest equipment failures (21) and islanding events (28), while the South leads in public appeals (42). The Northeast sees the most intentional attacks (131).*
 
 
 ## Assessment of Missingness
