@@ -429,3 +429,129 @@ I ran a two-sided permutation test with 1 000 label shuffles, yielding p = 0.59.
   height="600"  
   frameborder="0">  
 </iframe>  
+
+
+
+
+
+
+
+
+
+My baseline model is a binary classifier that predicts whether a power outage will be severe (≥ 10 000 customers affected) or non-severe. I built it using an `sklearn` Pipeline with two main steps:
+
+1. Feature encoding 
+   - Nominal (categorical): `NERC.REGION`, `CLIMATE.REGION`, `CAUSE.CATEGORY`, `ANOMALY.LEVEL` → One-Hot Encoding  
+   - Quantitative (numeric): `YEAR`, `MONTH`, `log_TOTAL_CUSTOMERS` (the log of `TOTAL.CUSTOMERS`) → StandardScaler  
+
+2. Model
+   - LogisticRegression with `max_iter=5000`  
+
+I split the data into 80 % training / 20 % testing sets, stratified by the target label.
+
+Features in my model
+- 4 nominal features (`NERC.REGION`, `CLIMATE.REGION`, `CAUSE.CATEGORY`, `ANOMALY.LEVEL`)  
+- 3 quantitative features (`YEAR`, `MONTH`, `log_TOTAL_CUSTOMERS`)  
+
+I chose these because:  
+- The categorical features describe the grid area and climate context, which affect outage patterns.  
+- The numeric features (year/month) capture seasonality and trends.  
+- The log of total customers scales down large counts for stable learning.
+
+Performance on the test set
+
+|               | precision | recall | f1-score | support |
+|--------------:|----------:|-------:|---------:|--------:|
+| Non-Severe    |      0.98 |   0.85 |     0.91 |      53 |
+| Severe        |      0.95 |   0.99 |     0.97 |     156 |
+| accuracy  |           |        |     0.96 |     209 |
+| macro avg     |      0.96 |   0.92 |     0.94 |     209 |
+| weighted avg  |      0.96 |   0.96 |     0.96 |     209 |
+
+<iframe  
+  src="assets/Baseline_Confusion_Matrix.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+
+- High recall (≈ 99 % on “Severe”) means the model catches almost all true severe outages.  
+- Precision (≈ 98 % on “Non-Severe”) shows few false alarms for non-severe cases.  
+
+I believe this baseline model is a strong starting point, but there is still room to trade off a bit of recall for fewer false positives.
+
+---
+
+## Final Model
+
+For the final model, I improved upon the baseline by engineering two new features and using a more powerful algorithm.
+
+New features added  
+1. Seasonality:  
+   - `MONTH_sin = sin(2π · MONTH / 12)`  
+   - `MONTH_cos = cos(2π · MONTH / 12)`  
+   These capture cyclic weather patterns without a sharp break between December and January.  
+2. Price signal:  
+   - `log_TOTAL.PRICE` (the log of `TOTAL.PRICE`)  
+   Electricity price often correlates with grid stress; taking its log stabilises extreme values.
+
+Model and hyperparameters  
+- Algorithm: `RandomForestClassifier` inside an `sklearn` Pipeline (One-Hot + StandardScaler).  
+- Hyperparameter search: `GridSearchCV` (3-fold, F1 scoring) over  
+  - `n_estimators`: [200, 400]  
+  - `max_depth`: [None, 10, 20]  
+  - `min_samples_leaf`: [1, 3]  
+- Best parameters found:  
+  - `n_estimators = 200`  
+  - `max_depth = None`  
+  - `min_samples_leaf = 3`  
+
+Performance comparison  
+
+| Metric | Baseline F1 | Final F1 | Change  |
+|-------:|------------:|---------:|--------:|
+| F1     |        0.91 |     0.97 |  +0.06  |
+
+<iframe  
+  src="assets/Final_Confusion_Matrix.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+
+The final model increased F1 by about 0.06 over the baseline. It achieves even fewer false positives while still catching nearly all true severe outages.
+
+---
+
+## Fairness Analysis
+
+For the fairness analysis, I compared model performance on two groups defined by `CLIMATE.REGION`:
+
+- Group X: Northwest  
+- Group Y: South  
+
+These regions face very different weather drivers (winter storms vs. hurricanes). We want to ensure the model performs similarly on both.
+
+Evaluation metric: F1-score on the same 20 % hold-out test set.
+
+Null Hypothesis (H₀):  
+The model’s F1-score for Northwest outages equals its F1-score for South outages (any observed gap is random).
+
+Alternative Hypothesis (H₁):  
+The model’s F1-score for Northwest outages differs from its F1-score for South outages.
+
+Test statistic:  
+Δ = F1(Northwest) − F1(South)
+
+- Observed F1(Northwest) = 0.909  
+- Observed F1(South)     = 0.974  
+- Observed Δ             = –0.065  
+
+<iframe  
+  src="assets/Permutation_Distribution_of_F1_Difference.html"  
+  width="800"  
+  height="600"  
+  frameborder="0">  
+</iframe>  
+
+I ran a two-sided permutation test with 1 000 shuffles of the region labels. The resulting p-value is 0.095, which is greater than α = 0.05. We therefore fail to reject H₀ and conclude there is no strong evidence of unfair performance between the Northwest and South regions.
